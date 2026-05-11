@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferência de Coletas - C50</title>
+    <meta name="theme-color" content="#033D60">
+    <meta name="description"
+        content="Conferência de recebimento de coletas com persistência local e modo offline - CCB Tesouraria.">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 4mm;
+        }
+
+        :root {
+            --primary: #033D60;
+            /* Azul Escuro CCB */
+            --primary-hover: #022b44;
+            --secondary: #201E1E;
+            /* Preto */
+            --accent: #FFCC66;
+            /* Amarelo Destaque CCB */
+            --accent-dark: #f0b842;
+            --danger: #DC3C00;
+            /* Vermelho Ênfase CCB */
+            --danger-hover: #ac0a3b;
+            --bg: #FFFFFF;
+            --bg-alt: #CDD4DC;
+            /* Cinza Padrão CCB */
+            --card-bg: #ffffff;
+            --text-main: #201E1E;
+            --text-muted: #49656C;
+            --border: #CDD4DC;
+            --input-focus: #CDD4DC;
+            --table-header: #CDD4DC;
+            --table-divider: #033D60;
+            --border-color: #A5A5A5;
+            --header-bg: #CDD4DC;
+            --section-bg: #201E1E;
+            --total-bg: #FFCC66;
+            /* Amarelo para total geral */
+            --subtotal-bg: #98CDBD;
+            /* Verde Água para subtotais */
+            --input-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Verdana', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-alt);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            font-size: 10pt;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* PWA Header / Action Bar */
+        .action-bar {
+            position: sticky;
+            top: 0;
+            background: rgba(3, 61, 96, 0.9);
+            /* Azul Escuro CCB com transparência */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .container {
+            max-width: 194mm;
+            width: 100%;
+            margin: 1rem auto;
+            background: white;
+            padding: 4mm 4mm 6mm 4mm;
+            min-height: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .no-print {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 6px auto;
+            max-width: 194mm;
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 11px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--primary);
+            /* Usando azul CCB no PDF tbm */
+            color: white;
+            opacity: 0.9;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+        }
+
+        .btn-outline {
+            background-color: white;
+            border-color: var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+        }
+
+        .hint {
+            margin-left: auto;
+            font-size: 10px;
+            color: #777;
+            padding-top: 8px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-overlay.is-open {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-content {
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-text {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            background: var(--bg);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+
+        header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.2fr;
+            gap: 15px;
+            margin-bottom: 12px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 7.5pt;
+            font-weight: bold;
+            color: #444;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        /* Estilo específico para campos do cabeçalho (para evitar corte no PDF) */
+        .field-group input,
+        .field-group select {
+            width: 100%;
+            padding: 5px 8px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font-size: 8.5pt;
+            line-height: 1.4;
+            background: var(--input-bg);
+            text-transform: uppercase;
+            overflow-wrap: break-word;
+            box-sizing: border-box;
+        }
+
+        /* Estilo base para outros inputs (como os da tabela) */
+        input[type="number"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 4px 2px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--header-bg);
+            font-size: 7.5pt;
+            font-weight: bold;
+            height: 38px;
+            color: #222;
+        }
+
+        .section-divider {
+            background-color: var(--section-bg);
+            color: white;
+            font-weight: bold;
+            font-size: 9pt;
+            text-align: center;
+            padding: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Colunagem Otimizada */
+        .col-dia {
+            width: 8mm;
+        }
+
+        .col-val {
+            width: 18mm;
+        }
+
+        .col-total {
+            width: 18mm;
+        }
+
+        .input-cell {
+            width: 100%;
+            max-width: 70px;
+            padding: 2px 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 9.5pt;
+            font-weight: 300;
+            line-height: 1;
+            height: 22px;
+        }
+
+        .header-editable {
+            border: none;
+            background: transparent;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            color: #222;
+            margin: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            outline: none;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .header-editable:empty:before {
+            content: "EXTRA";
+            opacity: 0.4;
+            font-weight: normal;
+        }
+
+        .input-dia {
+            text-align: center;
+            font-weight: bold;
+            font-family: sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        .subtotal-row {
+            background-color: var(--subtotal-bg);
+            font-weight: bold;
+        }
+
+        .subtotal-row td {
+            padding: 6px 2px;
+            font-size: 9pt;
+            color: var(--primary);
+        }
+
+        .grand-total-row {
+            background-color: var(--accent);
+            font-weight: bold;
+            font-size: 10.5pt;
+        }
+
+        .grand-total-row td {
+            border-top: 2px solid var(--primary);
+            padding: 6px 2px;
+            color: var(--secondary);
+        }
+
+        footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.18);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            color: #6b7280;
+            font-size: 8.5pt;
+        }
+
+        footer a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+                width: 98%;
+            }
+
+            .input-cell {
+                border: 0px solid #eee !important;
+            }
+
+            .header-editable {
+                border: 0px solid #eee !important;
+            }
+
+            footer {
+                color: #444;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 640px) {
+            .container {
+                width: fit-content !important;
+                min-width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 8px !important;
+                border-radius: 0;
+            }
+
+            .no-print {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .main-title-bar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center !important;
+                margin-bottom: 5px !important;
+            }
+
+            .main-title-bar h2 {
+                font-size: 11pt !important;
+            }
+
+            .main-title-bar span {
+                font-size: 7pt !important;
+            }
+
+            th,
+            td {
+                font-size: 6.8pt;
+                padding: 2px 1px;
+            }
+
+            .input-cell {
+                font-size: 8.5pt;
+                padding: 1px;
+                height: 20px;
+            }
+
+            .col-val {
+                width: 15mm;
+            }
+
+            .col-total {
+                width: 16mm;
+            }
+
+            .action-bar {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 0 8px 0 !important;
+                padding: 8px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+
+            .btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            header {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+                padding: 8px !important;
+            }
+
+            header .field-group:first-child {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="action-bar no-print">
+        <button class="btn btn-primary" style="display:flex;" onclick="tryPrint()">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor"
+                    d="M6 9V3h12v6H6Zm2-2h8V5H8v2Zm-2 14v-4H4a2 2 0 0 1-2-2v-4a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v4a2 2 0 0 1-2 2h-2v4H6Zm2-2h8v-6H8v6Zm12-6a1 1 0 1 0 0-2a1 1 0 0 0 0 2Z" />
+            </svg>
+            Imprimir
+        </button>
+
+        <button class="btn btn-secondary" style="display:flex;" onclick="gerarPDF()">
+            <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                    d="M6 9V3h12v6H6Zm2-2h8V5H8v2Zm-2 14v-4H4a2 2 0 0 1-2-2v-4a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v4a2 2 0 0 1-2 2h-2v4H6Zm2-2h8v-6H8v6Zm12-6a1 1 0 1 0 0-2a1 1 0 1 0 0 2Z" />
+            </svg>
+            GERAR PDF
+        </button>
+
+        <button class="btn btn-danger" onclick="showResetModal()">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor"
+                    d="M7 21a2 2 0 0 1-2-2V7H4V5h5V4h6v1h5v2h-1v12a2 2 0 0 1-2 2H7Zm10-14H7v12h10V7Zm-8 10h2V9H9v8Zm4 0h2V9h-2v8Z" />
+            </svg>
+            Limpar Dados
+        </button>
+
+        <button id="installBtn" class="btn btn-primary" style="display: none; background-color: var(--accent);">
+            Instalar App
+        </button>
+
+        <span class="hint">* Os dados serão salvos automaticamente (persistência local).<br>&nbsp;&nbsp;&nbsp;Para
+            limpar os dados, clique no botão "Limpar Dados".</span>
+    </div>
+
+    <!-- Reset Modal -->
+    <div id="confirmOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle"
+        aria-describedby="confirmDesc">
+        <div class="modal">
+            <div class="modal-content">
+                <div class="modal-title">Limpar tudo?</div>
+                <div class="modal-text">Esta ação irá apagar todos os lançamentos atuais permanentemente.</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="hideResetModal()">Cancelar</button>
+                <button class="btn btn-primary" style="background-color: var(--danger);" onclick="resetForm()">Apagar
+                    Tudo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-title-bar"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 style="font-size: 14pt; margin: 0; color: #2c3e50;">Conferência de Lançamentos - C50</h2>
+            <span style="font-size: 8pt; font-weight: bold;">CCB - TESOURARIA</span>
+        </div>
+
+        <header>
+            <div class="field-group">
+                <label>Nome da Comum</label>
+                <input type="text" id="casa">
+            </div>
+            <div class="field-group">
+                <label>Mês / Ano</label>
+                <div style="display: flex; gap: 4px;">
+                    <select id="mes" style="flex:2">
+                        <option>Janeiro</option>
+                        <option>Fevereiro</option>
+                        <option>Março</option>
+                        <option>Abril</option>
+                        <option>Maio</option>
+                        <option>Junho</option>
+                        <option>Julho</option>
+                        <option>Agosto</option>
+                        <option>Setembro</option>
+                        <option>Outubro</option>
+                        <option>Novembro</option>
+                        <option>Dezembro</option>
+                    </select>
+                    <input type="text" id="ano" value="2026" style="flex:1; text-align:center;">
+                </div>
+            </div>
+            <div class="field-group">
+                <label>Adm. Destinatária</label>
+                <input type="text" id="adm" value="CAMPINAS">
+            </div>
+        </header>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-dia">DIA</th>
+                        <th class="col-val">PIEDADE, CONST.<br>E DIVERSOS</th>
+                        <th class="col-val">REUNIÃO<br>MOCIDADE</th>
+                        <th class="col-val">COLETA ESPECIAL<br>BRASIL</th>
+                        <th class="col-val">COLETA ENSAIO<br>REGIONAL</th>
+                        <th class="col-val">
+                            <div id="colExtraTitulo" contenteditable="true" class="header-editable"></div>
+                        </th>
+                        <th class="col-total">TOTAL DIA</th>
+                    </tr>
+                </thead>
+                <tbody id="body-principal"></tbody>
+                <tbody>
+                    <tr class="subtotal-row">
+                        <td>SUB</td>
+                        <td id="sp1">0,00</td>
+                        <td id="sm1">0,00</td>
+                        <td id="sb1">0,00</td>
+                        <td id="se1">0,00</td>
+                        <td id="sc1">0,00</td>
+                        <td id="st1" style="background-color:#eef; color:#1a237e">0,00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" class="section-divider">Jovens e Menores</td>
+                    </tr>
+                </tbody>
+                <tbody id="body-jovens"></tbody>
+                <tfoot>
+                    <tr class="subtotal-row">
+                        <td>SUB</td>
+                        <td id="sp2">0,00</td>
+                        <td id="sm2">0,00</td>
+                        <td id="sb2">0,00</td>
+                        <td id="se2">0,00</td>
+                        <td id="sc2">0,00</td>
+                        <td id="st2" style="background-color:#eef; color:#1a237e">0,00</td>
+                    </tr>
+                    <tr class="grand-total-row">
+                        <td style="text-align:center; font-size:8pt">TOTAL GERAL</td>
+                        <td id="gp">0,00</td>
+                        <td id="gm">0,00</td>
+                        <td id="gb">0,00</td>
+                        <td id="ge">0,00</td>
+                        <td id="gc">0,00</td>
+                        <td id="gt" style="background-color:#d4edda; color:#155724">0,00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <footer>
+            <span>CCB Administração Campinas | Confere C50 | Versão 1.0
+                - <span id="footerYear">2026</span></span>
+            <span style="font-variant-numeric: tabular-nums;">Desenvolvido por <a id="developerEmail" href="#">Rodrigo
+                    Lima&reg;</a></span>
+        </footer>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'confere_coletas_c50.formState';
+        const ROWS_PRINCIPAL = 15;
+        const ROWS_JOVENS = 5;
+
+        // Initialize UI
+        document.addEventListener('DOMContentLoaded', () => {
+            buildTable('body-principal', ROWS_PRINCIPAL);
+            buildTable('body-jovens', ROWS_JOVENS);
+            setMesAnoCorrentes();
+            restoreState();
+            setupAutoSave();
+            setupPWAInstall();
+
+            // Define o e-mail dinamicamente
+            const email = "rfergomes" + "@" + "gmail.com";
+            const emailEl = document.getElementById('developerEmail');
+            if (emailEl) emailEl.href = "mailto:" + email;
+
+            document.getElementById('footerYear').textContent = new Date().getFullYear();
+        });
+
+
+        // Atualiza o ano no rodapé automaticamente
+        (function setFooterYear() {
+            const el = document.getElementById('footerYear');
+            if (!el) return;
+            el.textContent = String(new Date().getFullYear());
+        })();
+
+        function setMesAnoCorrentes() {
+            const now = new Date();
+            const mesEl = document.getElementById('mes');
+            const anoEl = document.getElementById('ano');
+
+            if (mesEl && mesEl.tagName === 'SELECT') {
+                // Jan=0 ... Dez=11
+                const idx = now.getMonth();
+                if (idx >= 0 && idx < mesEl.options.length) mesEl.selectedIndex = idx;
+            }
+            if (anoEl) {
+                anoEl.value = String(now.getFullYear());
+            }
+        }
+
+        function buildTable(containerId, count) {
+            const tbody = document.getElementById(containerId);
+            for (let i = 0; i < count; i++) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+			<td><input type="text" class="input-cell input-dia" data-key="${containerId}:${i}:dia"></td>
+			<td><input type="number" step="0.01" class="input-cell val-p" oninput="calculate()" data-key="${containerId}:${i}:p"></td>
+			<td><input type="number" step="0.01" class="input-cell val-m" oninput="calculate()" data-key="${containerId}:${i}:m"></td>
+			<td><input type="number" step="0.01" class="input-cell val-b" oninput="calculate()" data-key="${containerId}:${i}:b"></td>
+			<td><input type="number" step="0.01" class="input-cell val-e" oninput="calculate()" data-key="${containerId}:${i}:e"></td>
+			<td><input type="number" step="0.01" class="input-cell val-c" oninput="calculate()" data-key="${containerId}:${i}:c"></td>
+			<td class="row-total">0,00</td>
+		`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function calculate() {
+            let p1 = 0, m1 = 0, b1 = 0, e1 = 0, c1 = 0, t1 = 0;
+            let p2 = 0, m2 = 0, b2 = 0, e2 = 0, c2 = 0, t2 = 0;
+
+            // Process Principal
+            document.querySelectorAll('#body-principal tr').forEach(r => {
+                const vals = Array.from(r.querySelectorAll('input[type="number"]')).map(i => parseFloat(i.value) || 0);
+                const rowTotal = vals.reduce((a, b) => a + b, 0);
+                r.querySelector('.row-total').textContent = formatCurrency(rowTotal);
+                p1 += vals[0]; m1 += vals[1]; b1 += vals[2]; e1 += vals[3]; c1 += vals[4]; t1 += rowTotal;
+            });
+
+            // Process Jovens
+            document.querySelectorAll('#body-jovens tr').forEach(r => {
+                const vals = Array.from(r.querySelectorAll('input[type="number"]')).map(i => parseFloat(i.value) || 0);
+                const rowTotal = vals.reduce((a, b) => a + b, 0);
+                r.querySelector('.row-total').textContent = formatCurrency(rowTotal);
+                p2 += vals[0]; m2 += vals[1]; b2 += vals[2]; e2 += vals[3]; c2 += vals[4]; t2 += rowTotal;
+            });
+
+            // Update Subtotals
+            updateDisplay('sp1', p1); updateDisplay('sm1', m1); updateDisplay('sb1', b1);
+            updateDisplay('se1', e1); updateDisplay('sc1', c1); updateDisplay('st1', t1);
+
+            updateDisplay('sp2', p2); updateDisplay('sm2', m2); updateDisplay('sb2', b2);
+            updateDisplay('se2', e2); updateDisplay('sc2', c2); updateDisplay('st2', t2);
+
+            // Grand Totals
+            updateDisplay('gp', p1 + p2); updateDisplay('gm', m1 + m2); updateDisplay('gb', b1 + b2);
+            updateDisplay('ge', e1 + e2); updateDisplay('gc', c1 + c2); updateDisplay('gt', t1 + t2);
+        }
+
+        function formatCurrency(v) {
+            return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function updateDisplay(id, val) {
+            document.getElementById(id).textContent = formatCurrency(val);
+        }
+
+        // Persistence
+        function setupAutoSave() {
+            const events = ['input', 'change'];
+            events.forEach(evt => {
+                document.addEventListener(evt, (e) => {
+                    if (e.target.matches('input, select')) saveState();
+                });
+            });
+        }
+
+        function saveState() {
+            const state = {};
+            document.querySelectorAll('input, select, [contenteditable]').forEach(el => {
+                const key = el.dataset.key || el.id;
+                if (!key) return;
+                state[key] = el.getAttribute('contenteditable') === 'true' ? el.innerText : el.value;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+
+        function restoreState() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            try {
+                const state = JSON.parse(raw);
+                document.querySelectorAll('input, select, [contenteditable]').forEach(el => {
+                    const key = el.dataset.key || el.id;
+                    if (key && state[key] !== undefined) {
+                        if (el.getAttribute('contenteditable') === 'true') {
+                            el.innerText = state[key];
+                        } else {
+                            el.value = state[key];
+                        }
+                    }
+                });
+                calculate();
+            } catch (e) { console.error("Error restoring state", e); }
+        }
+
+
+        function clearState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch { }
+        }
+
+        function confirmResetModal() {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('confirmOverlay');
+                const btnCancel = document.getElementById('confirmCancel');
+                const btnOk = document.getElementById('confirmOk');
+
+                let lastActive = document.activeElement;
+
+                const cleanup = () => {
+                    document.removeEventListener('keydown', onKeyDown, true);
+                    overlay.removeEventListener('click', onOverlayClick, true);
+                    btnCancel.removeEventListener('click', onCancel, true);
+                    btnOk.removeEventListener('click', onOk, true);
+                    overlay.classList.remove('is-open');
+                    if (lastActive && typeof lastActive.focus === 'function') lastActive.focus();
+                };
+
+                const finish = (value) => { cleanup(); resolve(value); };
+
+                const onCancel = () => finish(false);
+                const onOk = () => finish(true);
+                const onOverlayClick = (e) => {
+                    if (e.target === overlay) finish(false);
+                };
+                const onKeyDown = (e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        finish(false);
+                        return;
+                    }
+                    if (e.key === 'Enter') {
+                        // Enter confirma por padrão (evita disparar submit acidental)
+                        e.preventDefault();
+                        onOk();
+                        return;
+                    }
+                    if (e.key === 'Tab') {
+                        // foco preso no modal
+                        const focusables = [btnCancel, btnOk].filter(Boolean);
+                        if (focusables.length === 0) return;
+                        const idx = focusables.indexOf(document.activeElement);
+                        if (e.shiftKey) {
+                            const prev = idx <= 0 ? focusables.length - 1 : idx - 1;
+                            e.preventDefault();
+                            focusables[prev].focus();
+                        } else {
+                            const next = idx === -1 || idx >= focusables.length - 1 ? 0 : idx + 1;
+                            e.preventDefault();
+                            focusables[next].focus();
+                        }
+                    }
+                };
+
+                overlay.classList.add('is-open');
+                btnCancel.addEventListener('click', onCancel, true);
+                btnOk.addEventListener('click', onOk, true);
+                overlay.addEventListener('click', onOverlayClick, true);
+                document.addEventListener('keydown', onKeyDown, true);
+
+                btnCancel.focus();
+            });
+        }
+
+        function resetForm() {
+            localStorage.removeItem(STORAGE_KEY);
+            document.querySelectorAll('input:not(#adm):not(#ano), select').forEach(el => el.value = '');
+            document.querySelectorAll('[contenteditable]').forEach(el => el.innerText = '');
+            setMesAnoCorrentes();
+            calculate();
+            hideResetModal();
+        }
+
+        function setMesAnoCorrentes() {
+            const now = new Date();
+            document.getElementById('mes').selectedIndex = now.getMonth();
+            document.getElementById('ano').value = now.getFullYear();
+        }
+
+        function tryPrint() {
+            console.log("Iniciando impressão...");
+            try {
+                window.print();
+            }
+            catch (e) {
+                console.error("Erro ao imprimir:", e);
+                alert("Impressão não suportada neste ambiente. Tente 'Gerar PDF'.");
+            }
+        }
+
+        function safeFilenamePart(s) {
+            return (s ?? '')
+                .toString()
+                .trim()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^\w\- ]+/g, '')
+                .replace(/\s+/g, '_')
+                .slice(0, 40);
+        }
+
+        function gerarPDF() {
+            console.log("Iniciando geração de PDF...");
+            if (typeof html2pdf === 'undefined') {
+                console.error("html2pdf não está definido");
+                alert('A biblioteca de PDF não carregou. Verifique sua internet ou permissões do app.');
+                return;
+            }
+
+
+            const element = document.querySelector('.container');
+            if (!element) {
+                alert('Não foi possível localizar o conteúdo para gerar o PDF.');
+                return;
+            }
+
+            const casa = safeFilenamePart(document.getElementById('casa')?.value);
+            const mes = safeFilenamePart(document.getElementById('mes')?.value);
+            const ano = safeFilenamePart(document.getElementById('ano')?.value);
+            const filename = [
+                'Conferencia_C50',
+                casa || null,
+                mes || null,
+                ano || null
+            ].filter(Boolean).join('_') + '.pdf';
+
+            const opt = {
+                margin: [4, 4, 4, 4], // mm
+                filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    onclone: (clonedDoc) => {
+                        // Ajuste para evitar corte de texto nos inputs no PDF
+                        const style = clonedDoc.createElement('style');
+                        style.innerHTML = `
+                        .field-group input, .field-group select { 
+                            line-height: 1.5 !important; 
+                            padding-top: 6px !important; 
+                            padding-bottom: 6px !important; 
+                            height: auto !important;
+                            overflow: visible !important;
+                        }
+                        .input-cell {
+                            height: 20px !important;
+                            padding: 1px 2px !important;
+                        }
+                    `;
+                        clonedDoc.head.appendChild(style);
+
+                        // Garante que valores de input/select apareçam no render
+                        clonedDoc.querySelectorAll('input, textarea, select').forEach((el) => {
+                            if (el.tagName === 'SELECT') {
+                                const select = el;
+                                Array.from(select.options).forEach((opt) => {
+                                    opt.selected = opt.value === select.value;
+                                });
+                                return;
+                            }
+                            if (el.type === 'checkbox' || el.type === 'radio') {
+                                el.checked = !!el.checked;
+                                return;
+                            }
+                            el.setAttribute('value', el.value ?? '');
+                            if (el.tagName === 'TEXTAREA') {
+                                el.textContent = el.value ?? '';
+                            }
+                        });
+                    }
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
+            };
+
+            // Dica: no APK alguns WebViews não abrem download automaticamente;
+            // mesmo assim o PDF costuma ser gerado e exibido/baixado dependendo do wrapper.
+            console.log("Configurações do PDF prontas. Gerando...");
+            html2pdf().from(element).set(opt).save()
+                .then(() => {
+                    console.log("PDF gerado com sucesso");
+                })
+                .catch(err => {
+                    console.error("Erro no processamento do PDF:", err);
+                    alert("Erro ao processar o PDF. Certifique-se que o app tem permissão para salvar arquivos.");
+                });
+        }
+        // Modal
+        function showResetModal() { document.getElementById('confirmOverlay').classList.add('is-open'); }
+        function hideResetModal() { document.getElementById('confirmOverlay').classList.remove('is-open'); }
+
+        // PWA Service Worker
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SW registrado com sucesso!');
+                }).catch(err => {
+                    console.log('SW falha no registro:', err);
+                });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        function setupPWAInstall() {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'inline-flex';
+                console.log('PWA: Prompt de instalação capturado e pronto para uso!');
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installBtn.style.display = 'none';
+                deferredPrompt = null;
+            });
+        }
+
+    </script>
+</body>
+
+</html>
