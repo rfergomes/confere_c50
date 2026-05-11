@@ -1,68 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<svg width="512" height="512" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024">
+      <stop offset="0%" stop-color="#F5F7FA"/>
+      <stop offset="100%" stop-color="#D9E2F2"/>
     </linearGradient>
-    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#033D60;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4A90E2;stop-opacity:1" />
+
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#173B7A"/>
+      <stop offset="100%" stop-color="#4F86F7"/>
     </linearGradient>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.18"/>
+    </filter>
   </defs>
-  
-  <!-- Outer Circle -->
-  <circle cx="256" cy="256" r="240" fill="url(#bgGrad)" stroke="#8FB1D0" stroke-width="20" />
-  <circle cx="256" cy="256" r="225" fill="none" stroke="#A5C2D9" stroke-width="2" opacity="0.5" />
 
-  <!-- Icons Group (Top) -->
-  <g transform="translate(0, -20)">
-    <!-- Clipboard -->
-    <rect x="190" y="100" width="132" height="170" rx="10" fill="#fff" stroke="#033D60" stroke-width="8" />
-    <rect x="220" y="85" width="72" height="30" rx="5" fill="#033D60" />
-    <circle cx="256" cy="92" r="6" fill="#fff" />
-    <path d="M215 150 h80 M215 185 h80 M215 220 h50" stroke="#CBD5E1" stroke-width="6" stroke-linecap="round" />
-    <circle cx="205" cy="150" r="4" fill="#4A90E2" />
-    <circle cx="205" cy="185" r="4" fill="#4A90E2" />
-    <circle cx="205" cy="220" r="4" fill="#4A90E2" />
+  <circle cx="512" cy="512" r="480" fill="url(#bg)" stroke="#A8BCE4" stroke-width="18"/>
 
-    <!-- Graph -->
-    <g transform="translate(80, 160)">
-      <rect x="0" y="60" width="15" height="40" fill="#033D60" rx="2" />
-      <rect x="25" y="40" width="15" height="60" fill="#033D60" rx="2" />
-      <rect x="50" y="20" width="15" height="80" fill="#033D60" rx="2" />
-      <rect x="75" y="0" width="15" height="100" fill="#033D60" rx="2" />
-      <path d="M-10 80 Q 30 40, 90 0" fill="none" stroke="#4A90E2" stroke-width="6" stroke-linecap="round" />
-      <path d="M82 0 L90 0 L90 8" fill="none" stroke="#4A90E2" stroke-width="6" stroke-linecap="round" />
-    </g>
+  <g filter="url(#shadow)">
+    <rect x="380" y="180" width="260" height="330" rx="24" fill="white" stroke="#274C8E" stroke-width="10"/>
+    <rect x="455" y="145" width="110" height="40" rx="12" fill="#274C8E"/>
 
-    <!-- Calculator -->
-    <g transform="translate(340, 160)">
-      <rect x="0" y="0" width="90" height="110" rx="8" fill="#1E293B" />
-      <rect x="10" y="10" width="70" height="25" rx="2" fill="#475569" />
-      <g fill="#64748B">
-        <rect x="10" y="45" width="15" height="15" rx="2" />
-        <rect x="37" y="45" width="15" height="15" rx="2" />
-        <rect x="65" y="45" width="15" height="15" rx="2" />
-        <rect x="10" y="70" width="15" height="15" rx="2" />
-        <rect x="37" y="70" width="15" height="15" rx="2" />
-        <rect x="65" y="70" width="15" height="15" rx="2" />
-      </g>
-    </g>
-    
-    <!-- Dollar Coin -->
-    <circle cx="330" cy="260" r="45" fill="#4A90E2" stroke="#fff" stroke-width="4" />
-    <text x="330" y="278" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#fff" text-anchor="middle">$</text>
+    <circle cx="435" cy="260" r="18" fill="#4F86F7"/>
+    <path d="M426 260L434 268L446 252" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="470" y1="260" x2="580" y2="260" stroke="#8CA7D8" stroke-width="10" stroke-linecap="round"/>
+
+    <circle cx="435" cy="330" r="18" fill="#4F86F7"/>
+    <path d="M426 330L434 338L446 322" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="470" y1="330" x2="580" y2="330" stroke="#8CA7D8" stroke-width="10" stroke-linecap="round"/>
+
+    <circle cx="435" cy="400" r="18" fill="#4F86F7"/>
+    <path d="M426 400L434 408L446 392" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="470" y1="400" x2="580" y2="400" stroke="#8CA7D8" stroke-width="10" stroke-linecap="round"/>
   </g>
 
-  <!-- Main Text -->
-  <text x="256" y="380" font-family="Verdana, Geneva, sans-serif" font-size="140" font-weight="900" font-style="italic" fill="#033D60" text-anchor="middle" letter-spacing="-5">C50</text>
-  
-  <!-- Subtext Group -->
-  <g transform="translate(256, 420)">
-    <line x1="-120" y1="-5" x2="-35" y2="-5" stroke="#033D60" stroke-width="3" />
-    <text y="5" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#033D60" text-anchor="middle">CCB</text>
-    <line x1="35" y1="-5" x2="120" y2="-5" stroke="#033D60" stroke-width="3" />
-    
-    <text y="45" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" text-anchor="middle" text-transform="uppercase" letter-spacing="2">Finanças • Lançamentos • Conferência</text>
+  <g filter="url(#shadow)">
+    <rect x="690" y="250" width="150" height="220" rx="18" fill="#274C8E"/>
+    <rect x="720" y="280" width="90" height="30" rx="6" fill="#DCE6F8"/>
+
+    <g fill="#9CB7E8">
+      <rect x="720" y="340" width="24" height="24" rx="4"/>
+      <rect x="756" y="340" width="24" height="24" rx="4"/>
+      <rect x="792" y="340" width="24" height="24" rx="4"/>
+
+      <rect x="720" y="376" width="24" height="24" rx="4"/>
+      <rect x="756" y="376" width="24" height="24" rx="4"/>
+      <rect x="792" y="376" width="24" height="24" rx="4"/>
+
+      <rect x="720" y="412" width="24" height="24" rx="4"/>
+      <rect x="756" y="412" width="24" height="24" rx="4"/>
+      <rect x="792" y="412" width="24" height="24" rx="4"/>
+    </g>
   </g>
+
+  <g filter="url(#shadow)">
+    <rect x="170" y="420" width="40" height="100" rx="8" fill="#4F86F7"/>
+    <rect x="230" y="370" width="40" height="150" rx="8" fill="#3F76E8"/>
+    <rect x="290" y="320" width="40" height="200" rx="8" fill="#2E63D2"/>
+    <rect x="350" y="260" width="40" height="260" rx="8" fill="#1F4FAF"/>
+
+    <path d="M170 280C250 220 320 180 390 140" stroke="#2E63D2" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M385 135L395 150L375 148Z" fill="#2E63D2"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <circle cx="640" cy="470" r="55" fill="url(#blue)"/>
+    <text x="640" y="490" text-anchor="middle" font-size="58" font-family="Arial" fill="white" font-weight="bold">$</text>
+  </g>
+
+  <text x="512" y="700" text-anchor="middle" font-size="180" font-family="Arial" font-weight="900" fill="url(#blue)">
+    C50
+  </text>
+
+  <text x="512" y="790" text-anchor="middle" font-size="52" font-family="Arial" fill="#274C8E" letter-spacing="12">
+    CCB
+  </text>
+
+  <line x1="180" y1="770" x2="360" y2="770" stroke="#8CA7D8" stroke-width="6"/>
+  <line x1="664" y1="770" x2="844" y2="770" stroke="#8CA7D8" stroke-width="6"/>
+
+  <text x="512" y="860" text-anchor="middle" font-size="34" font-family="Arial" fill="#35558F">
+    FINANÇAS • LANÇAMENTOS • CONFERÊNCIA
+  </text>
 </svg>
