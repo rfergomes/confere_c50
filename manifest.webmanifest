@@ -1,6 +1,6 @@
 {
   "name": "Conferência de Lançamentos - C50",
-  "short_name": "C50 PWA",
+  "short_name": "CCB Confere C50",
   "description": "Sistema moderno de conferência de recebimento de coletas com persistência local e modo offline.",
   "start_url": "./index.html",
   "scope": "./",
