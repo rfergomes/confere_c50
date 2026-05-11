@@ -85,6 +85,7 @@
             padding: 0.75rem 1rem;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 0.5rem;
             z-index: 100;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -185,10 +186,11 @@
         }
 
         .hint {
-            margin-left: auto;
-            font-size: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 9px;
             color: #777;
-            padding-top: 8px;
+            margin-top: 4px;
         }
 
         /* Modal */
@@ -597,8 +599,7 @@
             Download APK
         </a>
 
-        <span class="hint">* Os dados serão salvos automaticamente (persistência local).<br>&nbsp;&nbsp;&nbsp;Para
-            limpar os dados, clique no botão "Limpar Dados".</span>
+        <span class="hint">* Os dados serão salvos automaticamente (persistência local). Para limpar os dados, clique no botão "Limpar Dados".</span>
     </div>
 
     <!-- Reset Modal -->

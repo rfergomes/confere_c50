@@ -1,15 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Conferencia">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#033D60"/>
-      <stop offset="1" stop-color="#4f46e5"/>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#033D60;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4A90E2;stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="96" fill="url(#g)"/>
-  <rect x="140" y="120" width="232" height="292" rx="24" fill="#ffffff" opacity="0.95"/>
-  <rect x="170" y="170" width="172" height="18" rx="9" fill="#033D60" opacity="0.9"/>
-  <rect x="170" y="212" width="172" height="18" rx="9" fill="#033D60" opacity="0.65"/>
-  <rect x="170" y="254" width="132" height="18" rx="9" fill="#033D60" opacity="0.55"/>
-  <path d="M190 328h132c10 0 18 8 18 18s-8 18-18 18H190c-10 0-18-8-18-18s8-18 18-18Z" fill="#27ae60" opacity="0.9"/>
-  <path d="M214 345l16 16 40-44" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Outer Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGrad)" stroke="#8FB1D0" stroke-width="20" />
+  <circle cx="256" cy="256" r="225" fill="none" stroke="#A5C2D9" stroke-width="2" opacity="0.5" />
+
+  <!-- Icons Group (Top) -->
+  <g transform="translate(0, -20)">
+    <!-- Clipboard -->
+    <rect x="190" y="100" width="132" height="170" rx="10" fill="#fff" stroke="#033D60" stroke-width="8" />
+    <rect x="220" y="85" width="72" height="30" rx="5" fill="#033D60" />
+    <circle cx="256" cy="92" r="6" fill="#fff" />
+    <path d="M215 150 h80 M215 185 h80 M215 220 h50" stroke="#CBD5E1" stroke-width="6" stroke-linecap="round" />
+    <circle cx="205" cy="150" r="4" fill="#4A90E2" />
+    <circle cx="205" cy="185" r="4" fill="#4A90E2" />
+    <circle cx="205" cy="220" r="4" fill="#4A90E2" />
+
+    <!-- Graph -->
+    <g transform="translate(80, 160)">
+      <rect x="0" y="60" width="15" height="40" fill="#033D60" rx="2" />
+      <rect x="25" y="40" width="15" height="60" fill="#033D60" rx="2" />
+      <rect x="50" y="20" width="15" height="80" fill="#033D60" rx="2" />
+      <rect x="75" y="0" width="15" height="100" fill="#033D60" rx="2" />
+      <path d="M-10 80 Q 30 40, 90 0" fill="none" stroke="#4A90E2" stroke-width="6" stroke-linecap="round" />
+      <path d="M82 0 L90 0 L90 8" fill="none" stroke="#4A90E2" stroke-width="6" stroke-linecap="round" />
+    </g>
+
+    <!-- Calculator -->
+    <g transform="translate(340, 160)">
+      <rect x="0" y="0" width="90" height="110" rx="8" fill="#1E293B" />
+      <rect x="10" y="10" width="70" height="25" rx="2" fill="#475569" />
+      <g fill="#64748B">
+        <rect x="10" y="45" width="15" height="15" rx="2" />
+        <rect x="37" y="45" width="15" height="15" rx="2" />
+        <rect x="65" y="45" width="15" height="15" rx="2" />
+        <rect x="10" y="70" width="15" height="15" rx="2" />
+        <rect x="37" y="70" width="15" height="15" rx="2" />
+        <rect x="65" y="70" width="15" height="15" rx="2" />
+      </g>
+    </g>
+    
+    <!-- Dollar Coin -->
+    <circle cx="330" cy="260" r="45" fill="#4A90E2" stroke="#fff" stroke-width="4" />
+    <text x="330" y="278" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#fff" text-anchor="middle">$</text>
+  </g>
+
+  <!-- Main Text -->
+  <text x="256" y="380" font-family="Verdana, Geneva, sans-serif" font-size="140" font-weight="900" font-style="italic" fill="#033D60" text-anchor="middle" letter-spacing="-5">C50</text>
+  
+  <!-- Subtext Group -->
+  <g transform="translate(256, 420)">
+    <line x1="-120" y1="-5" x2="-35" y2="-5" stroke="#033D60" stroke-width="3" />
+    <text y="5" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#033D60" text-anchor="middle">CCB</text>
+    <line x1="35" y1="-5" x2="120" y2="-5" stroke="#033D60" stroke-width="3" />
+    
+    <text y="45" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" text-anchor="middle" text-transform="uppercase" letter-spacing="2">Finanças • Lançamentos • Conferência</text>
+  </g>
 </svg>

@@ -85,6 +85,7 @@
             padding: 0.75rem 1rem;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 0.5rem;
             z-index: 100;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -185,10 +186,11 @@
         }
 
         .hint {
-            margin-left: auto;
-            font-size: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 9px;
             color: #777;
-            padding-top: 8px;
+            margin-top: 4px;
         }
 
         /* Modal */
@@ -586,19 +588,20 @@
             Limpar Dados
         </button>
 
-        <button id="installBtn" class="btn btn-primary" style="display: none; background-color: var(--accent);">
-            Instalar App
-        </button>
-
-        <a href="Confere_C50.apk" download class="btn btn-outline" style="display:flex; text-decoration:none; background-color: #f8fafc; border: 1px solid #cbd5e1;">
+        <a href="Confere_C50.apk" download class="btn btn-outline"
+            style="display:flex; text-decoration:none; background-color: #f8fafc; border: 1px solid #cbd5e1;">
             <svg viewBox="0 0 24 24">
-                <path fill="currentColor" d="M15 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7l-5-5zM6 20V4h8v4h4v12H6zm10-10l-4 4-4-4h8z"/>
+                <path fill="currentColor"
+                    d="M15 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7l-5-5zM6 20V4h8v4h4v12H6zm10-10l-4 4-4-4h8z" />
             </svg>
             Download APK
         </a>
 
-        <span class="hint">* Os dados serão salvos automaticamente (persistência local).<br>&nbsp;&nbsp;&nbsp;Para
-            limpar os dados, clique no botão "Limpar Dados".</span>
+        <button id="installBtn" class="btn btn-primary" style="display: none; background-color: var(--accent);">
+            Instalar App
+        </button>
+
+        <span class="hint">* Os dados serão salvos automaticamente (persistência local). Para limpar os dados, clique no botão "Limpar Dados".</span>
     </div>
 
     <!-- Reset Modal -->
