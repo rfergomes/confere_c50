@@ -1,0 +1,25 @@
+{
+  "name": "Conferência de Lançamentos - C50",
+  "short_name": "C50 PWA",
+  "description": "Sistema moderno de conferência de recebimento de coletas com persistência local e modo offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#CDD4DC",
+  "theme_color": "#033D60",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
