@@ -726,7 +726,7 @@
             </table>
         </div>
         <footer>
-            <span>CCB Administração Campinas | Confere C50 | Versão 1.0
+            <span>CCB Administração Campinas | Confere C50 | Versão 1.1
                 - <span id="footerYear">2026</span></span>
             <span style="font-variant-numeric: tabular-nums;">Desenvolvido por <a id="developerEmail" href="#">Rodrigo
                     Lima&reg;</a> | <a href="Confere_C50.apk" download>Baixar APK</a></span>
@@ -754,16 +754,16 @@
                     const currentInput = e.target;
                     const currentTd = currentInput.closest('td');
                     const currentTr = currentTd.closest('tr');
-                    
+
                     // Seleciona todas as linhas que contêm células de entrada
                     const allRows = Array.from(document.querySelectorAll('table tbody tr')).filter(tr => tr.querySelector('.input-cell'));
                     const rowIndex = allRows.indexOf(currentTr);
-                    
+
                     if (rowIndex !== -1 && rowIndex < allRows.length - 1) {
                         const nextTr = allRows[rowIndex + 1];
                         const tds = Array.from(currentTr.querySelectorAll('td'));
                         const colIndex = tds.indexOf(currentTd);
-                        
+
                         if (colIndex !== -1) {
                             const nextTds = Array.from(nextTr.querySelectorAll('td'));
                             if (colIndex < nextTds.length) {
