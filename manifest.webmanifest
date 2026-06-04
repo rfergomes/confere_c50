@@ -1,5 +1,5 @@
 {
-  "name": "Conferência de Lançamentos - C50",
+  "name": "C50 Web",
   "short_name": "C50 Web",
   "description": "Sistema de conferência de recebimento de coletas com persistência local e modo offline.",
   "start_url": "./index.html",
