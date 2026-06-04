@@ -1,7 +1,7 @@
 {
   "name": "Conferência de Lançamentos - C50",
-  "short_name": "CCB Confere C50",
-  "description": "Sistema moderno de conferência de recebimento de coletas com persistência local e modo offline.",
+  "short_name": "C50 Web",
+  "description": "Sistema de conferência de recebimento de coletas com persistência local e modo offline.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -16,9 +16,9 @@
       "purpose": "any"
     },
     {
-      "src": "./icon.svg",
+      "src": "./icon.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ]
