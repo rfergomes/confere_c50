@@ -21,7 +21,7 @@
 
     <style>
         @page {
-            size: A4;
+            size: A4 portrait;
             margin: 4mm;
         }
 
@@ -249,7 +249,7 @@
 
         header {
             display: grid;
-            grid-template-columns: 2fr 1fr 1.2fr;
+            grid-template-columns: 1.2fr 1.8fr 1.2fr 1fr;
             gap: 15px;
             margin-bottom: 12px;
             padding: 10px;
@@ -431,24 +431,95 @@
 
             body {
                 background: white;
+                margin: 0;
+                padding: 0;
             }
 
             .container {
                 box-shadow: none;
-                padding: 0;
-                width: 98%;
+                padding: 2mm;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+                /* Escala o conteúdo para caber em uma página A4 */
+                zoom: 0.82;
+            }
+
+            header {
+                gap: 6px;
+                padding: 4px;
+                margin-bottom: 6px;
+            }
+
+            .field-group input,
+            .field-group select {
+                padding: 2px 4px;
+                font-size: 7.5pt;
+            }
+
+            label {
+                font-size: 6.5pt;
+                margin-bottom: 1px;
+            }
+
+            th {
+                height: 28px;
+                font-size: 6.5pt;
+                padding: 2px 1px;
+            }
+
+            td {
+                padding: 1px;
             }
 
             .input-cell {
+                height: 17px !important;
+                padding: 1px 2px !important;
+                font-size: 8pt;
                 border: 0px solid #eee !important;
             }
 
             .header-editable {
                 border: 0px solid #eee !important;
+                font-size: 6.5pt;
+            }
+
+            .subtotal-row td {
+                padding: 3px 1px;
+                font-size: 8pt;
+            }
+
+            .grand-total-row {
+                font-size: 9pt;
+            }
+
+            .grand-total-row td {
+                padding: 3px 1px;
+            }
+
+            .section-divider {
+                padding: 3px;
+                font-size: 7.5pt;
             }
 
             footer {
                 color: #444;
+                font-size: 7pt;
+                margin-top: 4px;
+                padding-top: 4px;
+            }
+
+            .main-title-bar h2 {
+                font-size: 11pt !important;
+            }
+
+            .main-title-bar span {
+                font-size: 7pt !important;
+            }
+
+            .table-wrapper {
+                margin-top: 4px;
             }
         }
 
@@ -554,7 +625,8 @@
                 padding: 8px !important;
             }
 
-            header .field-group:first-child {
+            .field-setor,
+            .field-casa {
                 grid-column: span 2;
             }
         }
@@ -592,7 +664,7 @@
             Instalar App
         </button>
 
-        <a href="Confere_C50.apk" download class="btn btn-outline"
+        <a href="C50_App.apk" download class="btn btn-outline"
             style="display:flex; text-decoration:none; background-color: #f8fafc; border: 1px solid #cbd5e1;">
             <svg viewBox="0 0 24 24">
                 <path fill="currentColor"
@@ -629,11 +701,19 @@
         </div>
 
         <header>
-            <div class="field-group">
-                <label>Nome da Comum</label>
-                <input type="text" id="casa">
+            <div class="field-group field-setor">
+                <label>Setor</label>
+                <select id="setor">
+                    <option value="">Carregando setores...</option>
+                </select>
             </div>
-            <div class="field-group">
+            <div class="field-group field-casa">
+                <label>Nome da Comum</label>
+                <select id="casa" disabled>
+                    <option value="">Selecione o setor primeiro</option>
+                </select>
+            </div>
+            <div class="field-group field-mes-ano">
                 <label>Mês / Ano</label>
                 <div style="display: flex; gap: 4px;">
                     <select id="mes" style="flex:2">
@@ -653,8 +733,8 @@
                     <input type="text" id="ano" value="2026" style="flex:1; text-align:center;">
                 </div>
             </div>
-            <div class="field-group">
-                <label>Adm. Destinatária</label>
+            <div class="field-group field-adm">
+                <label>Administração</label>
                 <input type="text" id="adm" value="CAMPINAS">
             </div>
         </header>
@@ -716,7 +796,7 @@
             <span>CCB Administração Campinas | Confere C50 | Versão 1.1
                 - <span id="footerYear">2026</span></span>
             <span style="font-variant-numeric: tabular-nums;">Desenvolvido por <a id="developerEmail" href="#">Rodrigo
-                    Lima&reg;</a> | <a href="Confere_C50.apk" download>Baixar APK</a></span>
+                    Lima&reg;</a> | <a href="C50_App.apk" download>Baixar APK</a></span>
         </footer>
     </div>
 
@@ -733,6 +813,7 @@
             restoreState();
             setupAutoSave();
             setupPWAInstall();
+            initIgrejasSystem();
 
             // Navegação com Enter para a próxima linha da mesma coluna
             document.addEventListener('keydown', (e) => {
@@ -881,6 +962,7 @@
                 const state = JSON.parse(raw);
                 document.querySelectorAll('input, select, [contenteditable]').forEach(el => {
                     const key = el.dataset.key || el.id;
+                    if (key === 'setor' || key === 'casa') return; // Handled asynchronously by initIgrejasSystem
                     if (key && state[key] !== undefined) {
                         if (el.getAttribute('contenteditable') === 'true') {
                             el.innerText = state[key];
@@ -965,6 +1047,15 @@
             localStorage.removeItem(STORAGE_KEY);
             document.querySelectorAll('input:not(#adm):not(#ano), select').forEach(el => el.value = '');
             document.querySelectorAll('[contenteditable]').forEach(el => el.innerText = '');
+
+            const setorEl = document.getElementById('setor');
+            if (setorEl) setorEl.value = '';
+            const casaEl = document.getElementById('casa');
+            if (casaEl) {
+                casaEl.innerHTML = '<option value="">Selecione o setor primeiro</option>';
+                casaEl.disabled = true;
+            }
+
             setMesAnoCorrentes();
             calculate();
             hideResetModal();
@@ -1023,38 +1114,68 @@
                 ano || null
             ].filter(Boolean).join('_') + '.pdf';
 
+            // Dimensões A4 em mm com margens
+            const marginMm = 4;
+            const pageWidthMm = 210 - (marginMm * 2);
+            const pageHeightMm = 297 - (marginMm * 2);
+
             const opt = {
-                margin: [4, 4, 4, 4], // mm
+                margin: [marginMm, marginMm, marginMm, marginMm],
                 filename,
-                image: { type: 'jpeg', quality: 0.98 },
+                image: { type: 'jpeg', quality: 0.95 },
                 html2canvas: {
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     onclone: (clonedDoc) => {
-                        // Ajuste para evitar corte de texto nos inputs no PDF
+                        // Estilos compactos para caber em uma página A4
                         const style = clonedDoc.createElement('style');
                         style.innerHTML = `
-                        .field-group input, .field-group select { 
-                            line-height: 1.5 !important; 
-                            padding-top: 6px !important; 
-                            padding-bottom: 6px !important; 
-                            height: auto !important;
-                            overflow: visible !important;
-                        }
-                        .input-cell {
-                            height: 20px !important;
-                            padding: 1px 2px !important;
-                        }
-                    `;
+                            * { box-sizing: border-box !important; }
+                            .action-bar, .no-print { display: none !important; }
+                            body { margin: 0; padding: 0; }
+                            .container {
+                                width: ${pageWidthMm}mm !important;
+                                max-width: ${pageWidthMm}mm !important;
+                                margin: 0 !important;
+                                padding: 2mm !important;
+                                box-shadow: none !important;
+                                border-radius: 0 !important;
+                            }
+                            header { gap: 6px; padding: 4px; margin-bottom: 6px; }
+                            label { font-size: 6.5pt !important; margin-bottom: 1px !important; }
+                            .field-group input, .field-group select {
+                                padding: 2px 4px !important;
+                                font-size: 7.5pt !important;
+                                line-height: 1.3 !important;
+                                height: auto !important;
+                                overflow: visible !important;
+                            }
+                            th { height: 26px !important; font-size: 6.5pt !important; padding: 2px 1px !important; }
+                            td { padding: 1px !important; }
+                            .input-cell {
+                                height: 16px !important;
+                                padding: 1px 2px !important;
+                                font-size: 8pt !important;
+                                border: 1px solid #ccc !important;
+                            }
+                            .subtotal-row td { padding: 3px 1px !important; font-size: 8pt !important; }
+                            .grand-total-row { font-size: 9pt !important; }
+                            .grand-total-row td { padding: 3px 1px !important; }
+                            .section-divider { padding: 3px !important; font-size: 7.5pt !important; }
+                            footer { font-size: 7pt !important; margin-top: 4px !important; padding-top: 4px !important; }
+                            .main-title-bar h2 { font-size: 11pt !important; }
+                            .main-title-bar span { font-size: 7pt !important; }
+                            .table-wrapper { margin-top: 4px !important; }
+                            .header-editable { font-size: 6.5pt !important; }
+                        `;
                         clonedDoc.head.appendChild(style);
 
                         // Garante que valores de input/select apareçam no render
                         clonedDoc.querySelectorAll('input, textarea, select').forEach((el) => {
                             if (el.tagName === 'SELECT') {
-                                const select = el;
-                                Array.from(select.options).forEach((opt) => {
-                                    opt.selected = opt.value === select.value;
+                                Array.from(el.options).forEach((opt) => {
+                                    opt.selected = opt.value === el.value;
                                 });
                                 return;
                             }
@@ -1063,27 +1184,46 @@
                                 return;
                             }
                             el.setAttribute('value', el.value ?? '');
-                            if (el.tagName === 'TEXTAREA') {
-                                el.textContent = el.value ?? '';
-                            }
+                            if (el.tagName === 'TEXTAREA') el.textContent = el.value ?? '';
                         });
                     }
                 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['css', 'legacy'] }
+                pagebreak: { mode: 'avoid-all' }
             };
 
             // Dica: no APK alguns WebViews não abrem download automaticamente;
             // mesmo assim o PDF costuma ser gerado e exibido/baixado dependendo do wrapper.
             console.log("Configurações do PDF prontas. Gerando...");
-            html2pdf().from(element).set(opt).save()
-                .then(() => {
-                    console.log("PDF gerado com sucesso");
-                })
-                .catch(err => {
-                    console.error("Erro no processamento do PDF:", err);
-                    alert("Erro ao processar o PDF. Certifique-se que o app tem permissão para salvar arquivos.");
-                });
+            html2pdf().from(element).set(opt).toPdf().get('pdf').then((pdf) => {
+                // Garantir que seja uma única página: remover páginas extras se existirem
+                const totalPages = pdf.internal.getNumberOfPages();
+                if (totalPages > 1) {
+                    for (let i = totalPages; i > 1; i--) {
+                        pdf.deletePage(i);
+                    }
+                }
+
+                // Download manual para garantir o nome do arquivo correto e extensão .pdf
+                const blob = pdf.output('blob');
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 200);
+
+                console.log("PDF gerado com sucesso");
+            }).catch(err => {
+                console.error("Erro no processamento do PDF:", err);
+                alert("Erro ao processar o PDF. Certifique-se que o app tem permissão para salvar arquivos.");
+            });
         }
         // Modal
         function showResetModal() { document.getElementById('confirmOverlay').classList.add('is-open'); }
@@ -1126,6 +1266,301 @@
                 installBtn.style.display = 'none';
                 deferredPrompt = null;
             });
+        }
+
+        // Lógica de Integração com API Igrejas e Filtro de Setores
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyXYw291RAXm_gnbKHeVnYuOBDFMfuLa6ei13XELY5XTAO4NVRIKlX-M1BddoWtix3Omg/exec';
+        const CACHE_KEY_SETORES = 'C50_Web.sectores_cache';
+        const CACHE_KEY_IGREJAS_PREFIX = 'C50_Web.igrejas_cache:';
+
+        async function initIgrejasSystem() {
+            const setorEl = document.getElementById('setor');
+            const casaEl = document.getElementById('casa');
+            if (!setorEl || !casaEl) return;
+
+            // 1. Carregar do cache local se existir para resposta instantânea
+            loadSectorsFromCache();
+
+            // 2. Escutar alteração no setor
+            setorEl.addEventListener('change', async () => {
+                const sectorId = setorEl.value;
+                await handleSectorChange(sectorId);
+                saveState(); // Salvar novo setor e limpar/salvar casa
+            });
+
+            // 3. Escutar alteração na igreja/comum
+            casaEl.addEventListener('change', () => {
+                const selectedOption = casaEl.selectedOptions[0];
+                const churchId = selectedOption ? selectedOption.dataset.id : null;
+                onChurchSelected(churchId);
+                saveState();
+            });
+
+            // 4. Escutar alterações no mês e ano para recalcular dias
+            const mesEl = document.getElementById('mes');
+            const anoEl = document.getElementById('ano');
+            if (mesEl) {
+                mesEl.addEventListener('change', () => {
+                    updateTableDays();
+                });
+            }
+            if (anoEl) {
+                anoEl.addEventListener('input', () => {
+                    updateTableDays();
+                });
+            }
+
+            // 5. Buscar setores atualizados da API em background
+            await fetchSectorsFromAPI();
+        }
+
+        function loadSectorsFromCache() {
+            try {
+                const cached = localStorage.getItem(CACHE_KEY_SETORES);
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    populateSectorsDropdown(data);
+                }
+            } catch (e) {
+                console.error("Erro ao ler cache de setores", e);
+            }
+        }
+
+        function populateSectorsDropdown(sectors) {
+            const setorEl = document.getElementById('setor');
+            const savedState = getSavedState();
+            const selectedSetor = savedState['setor'] || '';
+
+            setorEl.innerHTML = '<option value="">Selecione o Setor...</option>';
+            sectors.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.id;
+                option.textContent = s.setor;
+                if (s.id === selectedSetor) {
+                    option.selected = true;
+                }
+                setorEl.appendChild(option);
+            });
+
+            if (selectedSetor) {
+                loadChurchesFromCache(selectedSetor);
+                fetchChurchesFromAPI(selectedSetor);
+            } else {
+                const casaEl = document.getElementById('casa');
+                casaEl.innerHTML = '<option value="">Selecione o setor primeiro</option>';
+                casaEl.disabled = true;
+            }
+        }
+
+        async function fetchSectorsFromAPI() {
+            const setorEl = document.getElementById('setor');
+            try {
+                const res = await fetch(`${API_BASE_URL}?setores=true`);
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data)) {
+                    // Filtrar cabeçalho "ID" / "SETOR"
+                    const sectors = json.data.filter(s => s.id !== "ID" && s.setor !== "SETOR");
+                    localStorage.setItem(CACHE_KEY_SETORES, JSON.stringify(sectors));
+
+                    const currentSelection = setorEl.value;
+                    populateSectorsDropdown(sectors);
+                    if (currentSelection && Array.from(setorEl.options).some(o => o.value === currentSelection)) {
+                        setorEl.value = currentSelection;
+                    }
+                }
+            } catch (e) {
+                console.warn("Falha ao buscar setores online. Usando cache offline.", e);
+            }
+        }
+
+        function getSavedState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch {
+                return {};
+            }
+        }
+
+        async function handleSectorChange(sectorId) {
+            const casaEl = document.getElementById('casa');
+            if (!sectorId) {
+                casaEl.innerHTML = '<option value="">Selecione o setor primeiro</option>';
+                casaEl.disabled = true;
+                casaEl.value = '';
+                return;
+            }
+
+            casaEl.innerHTML = '<option value="">Carregando comuns...</option>';
+            casaEl.disabled = false;
+
+            loadChurchesFromCache(sectorId);
+            await fetchChurchesFromAPI(sectorId);
+        }
+
+        function loadChurchesFromCache(sectorId) {
+            try {
+                const cached = localStorage.getItem(CACHE_KEY_IGREJAS_PREFIX + sectorId);
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    populateChurchesDropdown(data);
+                }
+            } catch (e) {
+                console.error("Erro ao ler cache de igrejas do setor " + sectorId, e);
+            }
+        }
+
+        function populateChurchesDropdown(churches) {
+            const casaEl = document.getElementById('casa');
+            const savedState = getSavedState();
+            const selectedCasa = savedState['casa'] || '';
+            const currentVal = casaEl.value || selectedCasa;
+
+            casaEl.innerHTML = '<option value="">Selecione a Comum...</option>';
+            churches.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.localidade;
+                option.textContent = c.localidade;
+                option.dataset.id = c.id; // Salvar o ID no dataset do option
+                if (c.localidade === currentVal) {
+                    option.selected = true;
+                }
+                casaEl.appendChild(option);
+            });
+            casaEl.disabled = false;
+
+            // Se houver uma igreja pré-selecionada (restaurada), carregar os detalhes dela
+            const selectedOption = casaEl.selectedOptions[0];
+            if (selectedOption && selectedOption.dataset.id) {
+                onChurchSelected(selectedOption.dataset.id);
+            }
+        }
+
+        async function fetchChurchesFromAPI(sectorId) {
+            try {
+                const res = await fetch(`${API_BASE_URL}?setor_id=${sectorId}`);
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data)) {
+                    localStorage.setItem(CACHE_KEY_IGREJAS_PREFIX + sectorId, JSON.stringify(json.data));
+                    populateChurchesDropdown(json.data);
+                }
+            } catch (e) {
+                console.warn("Falha ao buscar igrejas online do setor " + sectorId, e);
+            }
+        }
+
+        // Lógica de Detalhes da Igreja (Dias de Eventos e Recálculo da Coluna DIA)
+        let currentChurchEvents = null;
+        const CACHE_KEY_CHURCH_DETAILS_PREFIX = 'C50_Web.church_details:';
+
+        async function onChurchSelected(churchId) {
+            if (!churchId) {
+                currentChurchEvents = null;
+                clearTableDays();
+                return;
+            }
+
+            // Tentar buscar do cache ou API e atualizar os dias
+            await fetchChurchDetails(churchId);
+        }
+
+        async function fetchChurchDetails(churchId) {
+            // 1. Tentar ler do cache local
+            try {
+                const cached = localStorage.getItem(CACHE_KEY_CHURCH_DETAILS_PREFIX + churchId);
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    currentChurchEvents = data.eventos || [];
+                    updateTableDays();
+                }
+            } catch (e) {
+                console.error("Erro ao ler cache de detalhes da igreja " + churchId, e);
+            }
+
+            // 2. Buscar da API em paralelo/background
+            try {
+                const res = await fetch(`${API_BASE_URL}?id=${churchId}`);
+                const json = await res.json();
+                if (json.success && json.data) {
+                    localStorage.setItem(CACHE_KEY_CHURCH_DETAILS_PREFIX + churchId, JSON.stringify(json.data));
+
+                    // Apenas atualiza se o ID selecionado ainda for o correspondente
+                    const selectedOption = document.getElementById('casa').selectedOptions[0];
+                    const currentId = selectedOption ? selectedOption.dataset.id : null;
+                    if (String(currentId) === String(churchId)) {
+                        currentChurchEvents = json.data.eventos || [];
+                        updateTableDays();
+                    }
+                }
+            } catch (e) {
+                console.warn("Falha ao buscar detalhes online da igreja " + churchId, e);
+            }
+        }
+
+        function clearTableDays() {
+            document.querySelectorAll('#body-principal .input-dia, #body-jovens .input-dia').forEach(input => {
+                input.value = '';
+            });
+            saveState();
+        }
+
+        function updateTableDays() {
+            if (!currentChurchEvents || !Array.isArray(currentChurchEvents)) return;
+
+            const mesEl = document.getElementById('mes');
+            const anoEl = document.getElementById('ano');
+            if (!mesEl || !anoEl) return;
+
+            const mesName = mesEl.value;
+            const anoVal = parseInt(anoEl.value, 10);
+            if (!mesName || isNaN(anoVal)) return;
+
+            const MESES = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            const monthIndex = MESES.indexOf(mesName);
+            if (monthIndex === -1) return;
+
+            // Separar dias da semana por tipo de evento
+            const cultos = currentChurchEvents.filter(e => e.tipo === 'CULTO').map(e => e.dia_semana);
+            const rjm = currentChurchEvents.filter(e => e.tipo === 'RJM').map(e => e.dia_semana);
+
+            // Calcular dias sequenciais do mês
+            const diasCulto = getDaysInMonthForWeekdays(anoVal, monthIndex, cultos);
+            const diasRjm = getDaysInMonthForWeekdays(anoVal, monthIndex, rjm);
+
+            // Preencher coluna DIA na tabela Principal (Culto)
+            const principalInputs = document.querySelectorAll('#body-principal .input-dia');
+            principalInputs.forEach((input, index) => {
+                input.value = (index < diasCulto.length) ? String(diasCulto[index]) : '';
+            });
+
+            // Preencher coluna DIA na tabela Jovens (RJM)
+            const jovensInputs = document.querySelectorAll('#body-jovens .input-dia');
+            jovensInputs.forEach((input, index) => {
+                input.value = (index < diasRjm.length) ? String(diasRjm[index]) : '';
+            });
+
+            saveState();
+        }
+
+        function getDaysInMonthForWeekdays(year, monthIndex, weekdays) {
+            const dayMap = {
+                "DOM": 0, "SEG": 1, "TER": 2, "QUA": 3, "QUI": 4, "SEX": 5, "SAB": 6
+            };
+            const targetDays = weekdays.map(wd => dayMap[wd]).filter(d => d !== undefined);
+            if (targetDays.length === 0) return [];
+
+            const days = [];
+            const date = new Date(year, monthIndex, 1);
+            while (date.getMonth() === monthIndex) {
+                if (targetDays.includes(date.getDay())) {
+                    days.push(date.getDate());
+                }
+                date.setDate(date.getDate() + 1);
+            }
+            return days.sort((a, b) => a - b);
         }
 
     </script>
